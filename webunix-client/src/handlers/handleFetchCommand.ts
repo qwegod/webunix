@@ -1,13 +1,13 @@
-export const handleFetchCommands = (command: string): Promise<any> => {
+export const handleFetchCommands = (url: string, req: Object): Promise<any> => {
     const options = {
       method: 'POST',
-      body: JSON.stringify({ command }),
+      body: JSON.stringify(req),
       headers: {
         'Content-Type': 'application/json',
       },
     };
   
-    return fetch('http://localhost:3232/api/execute', options)
+    return fetch(url, options)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);

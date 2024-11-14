@@ -4,9 +4,9 @@ interface ICommandsState {
   value: ICommand[];
 }
 
-interface ICommand {
+export interface ICommand {
   command: string;
-  response: string | null;
+  response?: string | null;
 }
 
 const initialState: ICommandsState = {
@@ -17,10 +17,10 @@ export const commandsSlice = createSlice({
   name: "commands",
   initialState,
   reducers: {
-    addCommand: (state, action: PayloadAction<string>) => {
+    addCommand: (state, action: PayloadAction<ICommand>) => {
       state.value = [
         ...state.value,
-        { command: action.payload, response: null },
+        { command: action.payload.command, response: null },
       ];
     },
     setResponse: (state, action: PayloadAction<string>) => {
@@ -29,7 +29,7 @@ export const commandsSlice = createSlice({
         lastCommand.response = action.payload;
       }
     },
-
+    
     clearCommands: (state) => {
       state.value = [];
     },
