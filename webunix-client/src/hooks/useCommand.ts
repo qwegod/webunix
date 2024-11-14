@@ -12,10 +12,11 @@ import { clearOutput, printOut } from "../store/reducers/outputSlice";
 import useExecute from "./useExecute";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import useSession from "./useSession";
+import Cookies from "js-cookie";
 
 function useCommand() {
   const dispatch = useAppDispatch();
-  const { directoryChecker } = useSession();
+  const { directoryMessage } = useSession();
   const { serverExecute } = useExecute();
   const session = useAppSelector((state) => state.session);
 
@@ -58,7 +59,7 @@ function useCommand() {
       return;
     }
 
-    if (!session.password) {
+    if (session.password === false) {
       const fetchedData = await handleFetchCommands(
         "http://localhost:3232/api/password",
         {
@@ -67,14 +68,16 @@ function useCommand() {
         }
       );
       if (fetchedData.success) {
-        dispatch(setPassword(inputValue));
         dispatch(clearOutput());
+        dispatch(setPassword())
         if (fetchedData.directory) {
           dispatch(setDirectory(fetchedData.directory));
           dispatch(setAuthorized());
-          dispatch(clearOutput())
+          
+          dispatch(clearOutput());
+        
         } else {
-          directoryChecker();
+          directoryMessage();
         }
       }
       return;

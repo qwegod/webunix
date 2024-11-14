@@ -5,6 +5,7 @@ export const handleFetchCommands = (url: string, req: Object): Promise<any> => {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include' as RequestCredentials,
     };
   
     return fetch(url, options)

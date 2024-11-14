@@ -13,9 +13,11 @@ function App() {
   const caretOffset = useAppSelector((state) => state.caretOffset.value);
   const { sendCommand } = useCommand()
   const session = useAppSelector((state) => state.session)
+  const output = useAppSelector(state => state.output.value)
 
   const { renderLastMessage } = useOutput()
   const { authorizationChecker } = useSession()
+
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -23,7 +25,10 @@ function App() {
 
 
   useEffect(() => {
-    authorizationChecker()
+    async function fetchAuthorization() {
+      await authorizationChecker()
+    } 
+    fetchAuthorization()
   }, [session]);
 
   useEffect(() => {
