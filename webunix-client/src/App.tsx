@@ -1,23 +1,34 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
-import { clearCommands } from "./store/reducers/commandsSlice";
 import { handleChangeValue } from "./handlers/handleChangeValue";
-import { handleKeyDown } from "./handlers/handleKeyDown";
+import useCommand from "./hooks/useCommand";
 import { handleCaretPosition } from "./handlers/handleCaretPosition";
+import { addCommand } from "./store/reducers/commandsSlice";
 import { handleFetchCommands } from "./handlers/handleFetchCommand";
+import useOutput from "./hooks/useOutput";
+import useSession from "./hooks/useSession";
 
 function App() {
   const inputValue = useAppSelector((state) => state.inputValue.value);
   const caretOffset = useAppSelector((state) => state.caretOffset.value);
-  const commands = useAppSelector((state) => state.commands.value);
+  const { sendCommand } = useCommand()
+  const session = useAppSelector((state) => state.session)
+
+  const { renderLastMessage } = useOutput()
+  const { authorizationChecker } = useSession()
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useAppDispatch();
 
+
+  useEffect(() => {
+    authorizationChecker()
+  }, [session]);
+
   useEffect(() => {
     const handleKeyDownWrapper = (e: KeyboardEvent) => {
-      handleKeyDown(e, inputValue, dispatch);
+      sendCommand(e, inputValue);
     };
 
     document.addEventListener("keydown", handleKeyDownWrapper);
@@ -25,7 +36,7 @@ function App() {
     return () => {
       document.removeEventListener("keydown", handleKeyDownWrapper);
     };
-  }, [dispatch, inputValue]);
+  }, [dispatch, inputValue, sendCommand, session]);
 
   useEffect(() => {
     const handleCaretPositionWrapper = () => {
@@ -49,15 +60,11 @@ function App() {
   return (
     <div className="flex flex-col w-[70%] h-screen m-auto">
       <div className="h-[90%] border-2 border-yellow-300 p-4">
-        {commands.map((el, index) => (
-          <div key={index * 2 + 1} className="flex flex-col">
-            <div key={index * 3 + 2}>{el.command}</div>
-            {el.response}
-          </div>
-        ))}
+        {renderLastMessage()}
       </div>
       <div className="h-[10%] border-2 border-red-600 flex items-center justify-center">
         <div className="relative w-[90%] bg-black h-6">
+          <span className={"absolute -translate-x-4"}>$</span>
           <input
             ref={inputRef}
             onChange={(e: React.FormEvent<HTMLInputElement>) => {
@@ -69,6 +76,7 @@ function App() {
             className="focus:outline-none bg-transparent absolute z-10 caret-transparent w-full font-black h-full"
             placeholder="!help"
           />
+
           <div
             style={{ transform: `translateX(${caretOffset}px)` }}
             className={`absolute top-[25%] h-[50%] w-1 `}
