@@ -1,0 +1,14 @@
+{
+    "name": "webunix-full",
+    "scripts": {
+        "start": "concurrently \"npm run server\" \"npm run client\"",
+        "client": "npm start --prefix webunix-client",
+        "server": "npm run dev --prefix webunix-server"
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.0"
+    },
+    "dependencies": {
+        "nodemon": "^3.1.7"
+    }
+}

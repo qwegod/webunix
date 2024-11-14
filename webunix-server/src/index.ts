@@ -3,15 +3,26 @@ import mysql from "mysql";
 import cors from "cors";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import { ISession } from "./ISession";
 
 dotenv.config();
 
 const app: Express = express();
+
 const port = process.env.PORT || 5252;
 
-app.use(cors({ origin: "http://localhost:3000" }));
-
+app.use(cors({ origin: "http://localhost:3000", credentials: true, }));
+app.use(cookieParser());
 app.use(bodyParser.json())
+
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { httpOnly: false, secure: false, sameSite: 'lax' } 
+}));
 
 const db = mysql.createConnection({
   host: process.env.HOST,
@@ -89,6 +100,14 @@ app.post("/api/password", (req: Request, res: Response) => {
     if (result[0].password === password) {
       
       if (result[0].directory) {
+
+        res.cookie('session_id', req.sessionID, {
+          httpOnly: false,
+          secure: false, 
+          sameSite: 'lax', 
+          maxAge: 1000 * 60 * 60 * 24
+        });
+
         return res.json({ success: true, directory: result[0].directory });
       }
       return res.json({ success: true });
@@ -115,6 +134,20 @@ app.post("/api/directory", (req: Request, res: Response) => {
   });
 });
 
+app.post("/api/authorizationChecker", (req: Request, res: Response) => {
+  const clientSessionId = req.body.clientID;
+
+   if (clientSessionId !== req.sessionID) {
+      res.json({ success: false });
+   }
+   else {
+    res.json({ success: true })
+   }
+  res.status(200)
+})
+
 app.listen(port, () => {
   console.log(`[server]: server is running at http://localhost:${port}`);
 });
+
+

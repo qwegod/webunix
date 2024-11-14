@@ -1,5 +1,6 @@
 import { clearOutput, printOut } from "../store/reducers/outputSlice";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { logout } from "../store/reducers/sessionSlice";
 
 function useExecute() {
   const dispatch = useAppDispatch();
@@ -13,6 +14,8 @@ function useExecute() {
       case "!user":
         dispatch(printOut(JSON.stringify(session)));
         break;
+      case "!logout":
+        dispatch(logout())
     }
   };
   return {
