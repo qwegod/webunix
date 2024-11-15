@@ -5,12 +5,16 @@ import useCommand from "./hooks/useCommand";
 import { handleCaretPosition } from "./handlers/handleCaretPosition";
 import useOutput from "./hooks/useOutput";
 import useSession from "./hooks/useSession";
+import { clearSuggest, setSuggest, setSuggestEqual } from "./store/reducers/outputSlice";
 
 function App() {
   const inputValue = useAppSelector((state) => state.inputValue.value);
   const caretOffset = useAppSelector((state) => state.caretOffset.value);
   const { sendCommand } = useCommand();
   const session = useAppSelector((state) => state.session);
+  const suggest = useAppSelector(state => state.output.suggest)
+  const suggestEqual = useAppSelector(state => state.output.suggestEqual)
+  const console_commands = useAppSelector(state => state.output.console_commands)
 
   const { renderLastMessage } = useOutput();
   const { authorizationChecker } = useSession();
@@ -40,6 +44,20 @@ function App() {
   }, [dispatch, inputValue, sendCommand, session]);
 
   useEffect(() => {
+    inputValue
+      .split("")
+      .forEach((sym, index) =>
+        suggest?.split("")[index] === sym ? dispatch(setSuggestEqual(true)) : dispatch(setSuggestEqual(false))
+      );
+      inputValue === "" 
+      ? dispatch(clearSuggest()) 
+      : dispatch(setSuggest(Object.keys(console_commands).find((e) => e.startsWith(inputValue)) as string));
+    
+
+    console.log(suggest)
+  }, [console_commands, dispatch, inputValue, suggest]);
+
+  useEffect(() => {
     const handleCaretPositionWrapper = () => {
       handleCaretPosition(inputRef, dispatch);
     };
@@ -66,6 +84,14 @@ function App() {
       <div className="h-[10%] border-2 border-red-600 flex items-center justify-center">
         <div className="relative w-[90%] bg-black h-6">
           <span className={"absolute -translate-x-4"}>$</span>
+          <span
+            className={`
+              " absolute text-gray-400  z-0 font-bold",
+              ${!suggestEqual && "hidden"}`
+            }
+          >
+            {suggest}
+          </span>
           <input
             ref={inputRef}
             onChange={(e: React.FormEvent<HTMLInputElement>) => {
