@@ -1,34 +1,30 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "./store/hooks";
 import { handleChangeValue } from "./handlers/handleChangeValue";
 import useCommand from "./hooks/useCommand";
 import { handleCaretPosition } from "./handlers/handleCaretPosition";
-import { addCommand } from "./store/reducers/commandsSlice";
-import { handleFetchCommands } from "./handlers/handleFetchCommand";
 import useOutput from "./hooks/useOutput";
 import useSession from "./hooks/useSession";
 
 function App() {
   const inputValue = useAppSelector((state) => state.inputValue.value);
   const caretOffset = useAppSelector((state) => state.caretOffset.value);
-  const { sendCommand } = useCommand()
-  const session = useAppSelector((state) => state.session)
-  const output = useAppSelector(state => state.output.value)
+  const { sendCommand } = useCommand();
+  const session = useAppSelector((state) => state.session);
 
-  const { renderLastMessage } = useOutput()
-  const { authorizationChecker } = useSession()
-
+  const { renderLastMessage } = useOutput();
+  const { authorizationChecker } = useSession();
 
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useAppDispatch();
 
-
   useEffect(() => {
     async function fetchAuthorization() {
-      await authorizationChecker()
-    } 
-    fetchAuthorization()
+      await authorizationChecker();
+    }
+    fetchAuthorization();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   useEffect(() => {

@@ -29,7 +29,7 @@ export const commandsSlice = createSlice({
         lastCommand.response = action.payload;
       }
     },
-    
+
     clearCommands: (state) => {
       state.value = [];
     },

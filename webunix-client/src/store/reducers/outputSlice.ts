@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { message } from "../../welcome";
 
 interface IOutput {
   value: string[];
@@ -15,17 +16,22 @@ export const outputSlice = createSlice({
     setMessage: (state, action: PayloadAction<string>) => {
       state.value = [action.payload];
     },
+    setLogin: (state) => {
+      state.value = ["Enter Username", "no account? !reg"];
+    },
+    setWelcome: (state) => {
+      state.value = [message];
+    },
     printOut: (state, action: PayloadAction<string>) => {
-      state.value = [...state.value, action.payload]
+      state.value = [...state.value, action.payload];
     },
     clearOutput: (state) => {
-        state.value = []
-    }
+      state.value = [];
+    },
   },
 });
 
+export const { setMessage, setLogin, setWelcome, printOut, clearOutput } =
+  outputSlice.actions;
 
-
-export const { setMessage, printOut, clearOutput } = outputSlice.actions
-
-export default outputSlice.reducer
+export default outputSlice.reducer;

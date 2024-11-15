@@ -23,5 +23,4 @@ export const caretOffsetSlice = createSlice({
 
 export const { setCaretOffset, clearCaretOffset } = caretOffsetSlice.actions;
 
-
 export default caretOffsetSlice.reducer;

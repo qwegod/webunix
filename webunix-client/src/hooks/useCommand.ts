@@ -1,23 +1,27 @@
 import { clearCaretOffset } from "../store/reducers/caretOffsetSlice";
-import { addCommand, setResponse } from "../store/reducers/commandsSlice";
+import { addCommand } from "../store/reducers/commandsSlice";
 import { clearInputValue } from "../store/reducers/inputValueSlice";
 import { handleFetchCommands } from "../handlers/handleFetchCommand";
 import {
   setAuthorized,
   setDirectory,
-  setLogin,
+  setUsername,
   setPassword,
   setRegister,
 } from "../store/reducers/sessionSlice";
-import { clearOutput, printOut, setMessage } from "../store/reducers/outputSlice";
+import {
+  clearOutput,
+  printOut,
+  setMessage,
+  setWelcome,
+} from "../store/reducers/outputSlice";
 import useExecute from "./useExecute";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import useSession from "./useSession";
-import Cookies from "js-cookie";
 
 function useCommand() {
   const dispatch = useAppDispatch();
-  const { authorizationChecker, notUniqueLoginMessage } = useSession();
+  const { authorizationChecker, notUniqueUsernameMessage } = useSession();
   const { serverExecute } = useExecute();
   const session = useAppSelector((state) => state.session);
 
@@ -46,57 +50,60 @@ function useCommand() {
 
   const authorization = async (inputValue: string) => {
     if (inputValue === "!reg") {
-      dispatch(setRegister(true))
-      
-      return
+      dispatch(setRegister(true));
+
+      return;
     }
     if (session.reg) {
-      if (!session.login) {
+      if (!session.username) {
         const fetchedData = await handleFetchCommands(
           "http://localhost:3232/api/reg",
           {
-            login: inputValue,
+            username: inputValue,
           }
         );
-        if (fetchedData.exists === true ) {
-          notUniqueLoginMessage()
-          setTimeout(() => {authorizationChecker()}, 1500);
+        if (fetchedData.exists === true) {
+          notUniqueUsernameMessage();
+          setTimeout(() => {
+            authorizationChecker();
+          }, 1500);
+        } else {
+          dispatch(setUsername(inputValue));
+          clearOutput();
         }
-        else {
-          dispatch(setLogin(inputValue))
-          clearOutput()
-        }
-        return
-      }
-      else {
+        return;
+      } else {
         const fetchedData = await handleFetchCommands(
           "http://localhost:3232/api/reg",
           {
-            login: session.login,
-            password: inputValue
+            username: session.username,
+            password: inputValue,
           }
         );
         if (fetchedData.success) {
-          dispatch(setPassword(true))
-          dispatch(setDirectory(fetchedData.directory))
-          dispatch(setRegister(false))
-          dispatch(setAuthorized())
-          dispatch(clearOutput())
+          dispatch(setPassword(true));
+          dispatch(setDirectory(fetchedData.directory));
+          dispatch(setRegister(false));
+          dispatch(setAuthorized());
+          dispatch(setMessage("success"));
+          setTimeout(() => {
+            dispatch(setWelcome());
+          }, 1000);
         }
-        return
+        return;
       }
     }
 
-    if (!session.login) {
+    if (!session.username) {
       const fetchedData = await handleFetchCommands(
         "http://localhost:3232/api/login",
         {
-          login: inputValue,
+          username: inputValue,
         }
       );
 
       if (fetchedData.exists) {
-        dispatch(setLogin(inputValue));
+        dispatch(setUsername(inputValue));
         dispatch(clearOutput());
       }
       return;
@@ -106,19 +113,18 @@ function useCommand() {
       const fetchedData = await handleFetchCommands(
         "http://localhost:3232/api/login",
         {
-          login: session.login,
+          username: session.username,
           password: inputValue,
         }
       );
       if (fetchedData.success) {
-        
-        dispatch(setPassword(true))
-        
-        dispatch(setAuthorized());  
-        dispatch(clearOutput());
-      
-        } 
-        
+        dispatch(setPassword(true));
+        dispatch(setAuthorized());
+        dispatch(setMessage("success"));
+        setTimeout(() => {
+          dispatch(setWelcome());
+        }, 1000);
+      }
     }
   };
 
