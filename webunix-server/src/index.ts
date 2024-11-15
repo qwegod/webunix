@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import { ISession } from "./ISession";
+import jwt from 'jsonwebtoken'
 
 dotenv.config();
 
@@ -13,16 +14,18 @@ const app: Express = express();
 
 const port = process.env.PORT || 5252;
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true, }));
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(cookieParser());
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
-app.use(session({
-  secret: 'your-secret-key',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { httpOnly: false, secure: false, sameSite: 'lax' } 
-}));
+app.use(
+  session({
+    secret: process.env.SECRET_KEY as string,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { httpOnly: false, secure: false, sameSite: "lax" },
+  })
+);
 
 const db = mysql.createConnection({
   host: process.env.HOST,
@@ -70,24 +73,6 @@ db.connect((err) => {
 // });
 
 app.post("/api/login", (req: Request, res: Response) => {
-  const loginToCheck = req.body.login;
-
-  const query = "SELECT * FROM users WHERE login = ?";
-
-  db.query(query, [loginToCheck], (err, result) => {
-    if (err) {
-      console.error("Error executing query: ", err);
-      return res.status(500);
-    }
-    if (result) {
-      return res.json({ exists: true });
-    } else {
-      return res.json({ exists: false });
-    }
-  });
-});
-
-app.post("/api/password", (req: Request, res: Response) => {
   const { login, password } = req.body;
 
   const query = "SELECT * FROM users WHERE login = ?";
@@ -97,57 +82,110 @@ app.post("/api/password", (req: Request, res: Response) => {
       console.error("Error executing query: ", err);
       return res.status(500);
     }
-    if (result[0].password === password) {
-      
-      if (result[0].directory) {
+    if (result) {
+      if (password) {
+        if (result[0].password === password) {
+          (req.session as ISession).user = login;
 
-        res.cookie('session_id', req.sessionID, {
-          httpOnly: false,
-          secure: false, 
-          sameSite: 'lax', 
-          maxAge: 1000 * 60 * 60 * 24
-        });
-
-        return res.json({ success: true, directory: result[0].directory });
+          return res.json({ success: true, directory: result[0].directory });
+        }
+        return res.json({ success: false });
       }
-      return res.json({ success: true });
+      return res.json({ exists: true });
     } else {
-      return res.json({ success: false });
+      return res.json({ exists: false });
     }
   });
 });
 
-app.post("/api/directory", (req: Request, res: Response) => {
-  const { login, directory } = req.body;
 
-  const query = "UPDATE users SET directory = ? WHERE login = ?";
+app.post("/api/logout", (req: Request, res: Response) => {
+  req.session.destroy((err) => {
+    if (err) console.error(err)
+    else res.json({success: true})
+  })
+  res.status(200)
+})
 
-  db.query(query, [directory, login], (err, result) => {
-    if (err) {
-      console.error("Error executing query: ", err);
-      return res.status(500);
-    }
-    if (result.affectedRows === 0) {
-      return res.json({ success: false });
-    }
-    return res.json({ success: true });
+app.post('/api/session', function(req, res) {
+
+  res.json({
+    message: 'Session.id: ' + req.session.id,  
+    user: (req.session as ISession).user 
   });
+});
+
+
+const keyGenerator = () => {
+  return Math.random().toString(36).substr(2);
+};
+
+app.post("/api/reg", (req: Request, res: Response) => {
+  const { login, password } = req.body;
+
+  const query = "SELECT * FROM users WHERE login = ?";
+
+  if (!password) {
+    db.query(query, [login], (err, result) => {
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res.status(500);
+      }
+      if (result.length > 0) {
+
+        return res.json({ exists: true });
+      } else {
+        const query = "INSERT INTO users (login) VALUES (?)";
+        db.query(query, [login], (err, result) => {
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500);
+          }
+          if (result.affectedRows > 0) {
+            return res.json({ exists: false });
+          }
+        });
+      }
+    });
+  } else {
+    const query = "UPDATE users SET password = ? WHERE login = ?";
+    db.query(query, [password, login], (err, result) => {
+      if (err) {
+        console.error("Error executing query: ", err);
+        return res.status(500);
+      }
+      if (result.affectedRows > 0) {
+        const query = "UPDATE users SET directory = ? WHERE login = ?";
+        const dir = login + keyGenerator();
+        db.query(query, [dir, login], (err, result) => {
+          if (err) {
+            console.error("Error executing query: ", err);
+            return res.status(500);
+          }
+          if (result.affectedRows > 0) {
+            res.cookie("session_id", req.sessionID, {
+              httpOnly: false,
+              secure: false,
+              sameSite: "lax",
+              maxAge: 1000 * 60 * 60 * 24,
+            });
+            return res.json({ success: true, directory: dir });
+          }
+        });
+      }
+    });
+  }
 });
 
 app.post("/api/authorizationChecker", (req: Request, res: Response) => {
-  const clientSessionId = req.body.clientID;
-
-   if (clientSessionId !== req.sessionID) {
-      res.json({ success: false });
-   }
-   else {
-    res.json({ success: true })
-   }
-  res.status(200)
-})
+  if (req.sessionID && (req.session as ISession).user) {
+    res.json({ success: true, user: (req.session as ISession).user });
+  } else {
+    res.json({ success: false });
+  }
+  res.status(200);
+});
 
 app.listen(port, () => {
   console.log(`[server]: server is running at http://localhost:${port}`);
 });
-
-
