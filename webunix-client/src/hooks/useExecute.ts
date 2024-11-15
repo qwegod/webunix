@@ -17,18 +17,14 @@ function useExecute() {
         dispatch(printOut(JSON.stringify(session)));
         break;
       case "!logout":
-        const logoutData = await handleFetchCommands(
-          "http://localhost:3232/api/logout", {  }
-          
-        );
-        console.log("logout "+ JSON.stringify(logoutData) )
+        await handleFetchCommands("http://localhost:3232/api/logout", {});
         dispatch(logout());
-        Cookies.remove("connect.sid")
-        break
+        Cookies.remove("connect.sid");
+        break;
       case "!session":
         const fetchedData = await handleFetchCommands(
-          "http://localhost:3232/api/session", {  }
-          
+          "http://localhost:3232/api/session",
+          {}
         );
         dispatch(printOut(JSON.stringify(fetchedData)));
         break;
