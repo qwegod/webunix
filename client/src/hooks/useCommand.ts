@@ -24,11 +24,15 @@ function useCommand() {
   const { authorizationChecker, notUniqueUsernameMessage } = useSession();
   const { serverExecute } = useExecute();
   const session = useAppSelector((state) => state.session);
+  const suggest = useAppSelector((state) => state.output.suggest);
 
   const sendCommand = async (e: KeyboardEvent, inputValue: string) => {
     if (e.key === "Enter" && inputValue.trim() !== "") {
       if (session.authorized === true) {
         if (inputValue[0] === "!") {
+          if (suggest) {
+            serverExecute(suggest!);
+          }
           serverExecute(inputValue);
         } else {
           dispatch(
