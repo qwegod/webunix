@@ -10,6 +10,7 @@ import { ISession } from "./ISession";
 import bcrypt from "bcrypt";
 import { sessionConfig } from "./sessionConfig";
 import path from "path";
+import { actionVerifier } from "./actionVerifier";
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use(session(sessionConfig));
 
 // app.post("/api/execute", (req: Request, res: Response) => {
+
 //   try {
 //     const exec = req.body;
 //     console.log(exec);
@@ -108,6 +110,26 @@ app.post("/api/session", function (req, res) {
 const keyGenerator = () => {
   return Math.random().toString(36).substr(2);
 };
+
+app.post("/api/tools/mkdir", (req: Request, res: Response) => {
+  if (!actionVerifier(req)) {
+    res.json({ success: false })
+  }
+  else {
+    const query = "SELECT directory FROM users WHERE username = ?";
+
+    db.query(query, [(req.session as ISession).username], (_, result) => {
+      const folderPath = path.join(__dirname, '../workspace', '/', result[0].directory, '/', req.body.dirname)
+      fs.mkdir(folderPath, (err) => {
+        if (err) {
+          console.error('Error creating folder')
+          return res.status(500)
+        }
+        res.json({ success: true })
+      })
+    })
+  }
+})
 
 app.post("/api/reg", (req: Request, res: Response) => {
   const { username, password } = req.body;

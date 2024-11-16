@@ -135,7 +135,7 @@ function App() {
             value={inputValue}
             type="text"
             className="focus:outline-none bg-transparent absolute z-10 caret-transparent w-full font-black h-full"
-            placeholder="!help"
+            placeholder="help"
           />
 
           <div

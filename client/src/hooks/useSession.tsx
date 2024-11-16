@@ -3,7 +3,6 @@ import { handleFetchCommands } from "../handlers/handleFetchCommand";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 import {
-  clearOutput,
   setLogin,
   setMessage,
   setWelcome,
@@ -24,8 +23,7 @@ function useSession() {
     const clientSessionID = Cookies.get("connect.sid");
     if (clientSessionID && !session.username) {
       const fetchedData = await handleFetchCommands(
-        "http://localhost:3232/api/authorizationChecker",
-        {}
+        "http://localhost:3232/api/authorizationChecker"
       );
       if (fetchedData.success) {
         dispatch(setAuthorized());
