@@ -1,4 +1,4 @@
-export const handleFetchCommands = (url: string, req: Object): Promise<any> => {
+export const handleFetchCommands = (url: string, req?: Object): Promise<any> => {
   const options = {
     method: "POST",
     body: JSON.stringify(req),
