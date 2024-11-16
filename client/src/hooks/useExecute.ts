@@ -61,7 +61,7 @@ function useExecute() {
 
   async function localMkdir(inputValue: string) {
     const fetchedData = await handleFetchCommands(
-      `${process.env.SERVER_URL}/api/tools/mkdir`, { dirname: inputValue }
+      `https://webunix-server.vercel.app/api/tools/mkdir`, { dirname: inputValue }
     );
     if (fetchedData.success) {
       dispatch(setResponse("Done"));
@@ -94,7 +94,7 @@ function useExecute() {
   }
 
  async function localLogout() {
-    await handleFetchCommands(`${process.env.SERVER_URL}/api/logout`);
+    await handleFetchCommands(`https://webunix-server.vercel.app/api/logout`);
         dispatch(logout());
         setTimeout(() => {
           window.location.reload();
@@ -103,7 +103,7 @@ function useExecute() {
 
  async function localSession() {
     const fetchedData = await handleFetchCommands(
-      `${process.env.SERVER_URL}/api/session`
+      `https://webunix-server.vercel.app/api/session`
     );
     const session_response = Object.entries(fetchedData)
       .map(([key, value]) => `${key}: ${value}`)

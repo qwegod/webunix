@@ -23,7 +23,7 @@ function useSession() {
     const clientSessionID = Cookies.get("connect.sid");
     if (clientSessionID && !session.username) {
       const fetchedData = await handleFetchCommands(
-        `${process.env.SERVER_URL}/api/authorizationChecker`
+        `https://webunix-server.vercel.app/api/authorizationChecker`
       );
       if (fetchedData.success) {
         dispatch(setAuthorized());

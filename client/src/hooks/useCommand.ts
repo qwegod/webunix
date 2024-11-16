@@ -63,7 +63,7 @@ function useCommand() {
     if (session.reg) {
       if (!session.username) {
         const fetchedData = await handleFetchCommands(
-          `${process.env.SERVER_URL}/api/reg`,
+          `https://webunix-server.vercel.app/api/reg`,
           {
             username: inputValue,
           }
@@ -80,7 +80,7 @@ function useCommand() {
         return;
       } else {
         const fetchedData = await handleFetchCommands(
-          `${process.env.SERVER_URL}/api/reg`,
+          `https://webunix-server.vercel.app/api/reg`,
           {
             username: session.username,
             password: inputValue,
@@ -102,7 +102,7 @@ function useCommand() {
 
     if (!session.username) {
       const fetchedData = await handleFetchCommands(
-        `${process.env.SERVER_URL}/api/login`,
+        `https://webunix-server.vercel.app/api/login`,
         {
           username: inputValue,
         }
@@ -117,7 +117,7 @@ function useCommand() {
 
     if (session.password === false) {
       const fetchedData = await handleFetchCommands(
-        `${process.env.SERVER_URL}/api/login`,
+        `https://webunix-server.vercel.app/api/login`,
         {
           username: session.username,
           password: inputValue,
