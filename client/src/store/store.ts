@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 
 import inputValueReducer from "./reducers/inputValueSlice";
 import caretOffsetReducer from "./reducers/caretOffsetSlice";
-import commandsReducer from "./reducers/commandsSlice";
+import commandReducer from "./reducers/commandSlice";
 import sessionReducer from "./reducers/sessionSlice";
 import outputReducer from "./reducers/outputSlice";
 
@@ -10,7 +10,7 @@ const store = configureStore({
   reducer: {
     inputValue: inputValueReducer,
     caretOffset: caretOffsetReducer,
-    commands: commandsReducer,
+    command: commandReducer,
     session: sessionReducer,
     output: outputReducer,
   },

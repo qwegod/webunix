@@ -12,12 +12,12 @@ interface IOutput {
 const initialState: IOutput = {
   out: [],
   console_commands: {
-    "!help": "-print commands",
-    "!info": "-print console info",
-    "!clear": "-clear console output",
-    "!user": "-print user info",
-    "!session": "-print session info from server",
-    "!logout": "-destroy session",
+    "help": "-print commands",
+    "info": "-print console info",
+    "clear": "-clear console output",
+    "user": "-print user info",
+    "session": "-print session info from server",
+    "logout": "-destroy session",
   },
   suggest: "",
   suggestEqual: false,
@@ -30,11 +30,11 @@ export const outputSlice = createSlice({
     setMessage: (state, action: PayloadAction<string>) => {
       state.out = [action.payload];
     },
+    setWelcome: (state) => {
+      state.out = [message]
+    },
     setLogin: (state) => {
       state.out = ["Enter Username", "no account? !reg"];
-    },
-    setWelcome: (state) => {
-      state.out = [message];
     },
     printOut: (state, action: PayloadAction<string>) => {
       state.out = [...state.out, action.payload];
@@ -56,8 +56,8 @@ export const outputSlice = createSlice({
 
 export const {
   setMessage,
-  setLogin,
   setWelcome,
+  setLogin,
   printOut,
   clearOutput,
   setSuggest,
