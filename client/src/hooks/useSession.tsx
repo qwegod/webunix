@@ -23,7 +23,7 @@ function useSession() {
     const clientSessionID = Cookies.get("connect.sid");
     if (clientSessionID && !session.username) {
       const fetchedData = await handleFetchCommands(
-        "http://localhost:3232/api/authorizationChecker"
+        `${process.env.SERVER_URL}/api/authorizationChecker`
       );
       if (fetchedData.success) {
         dispatch(setAuthorized());

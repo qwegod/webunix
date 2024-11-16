@@ -20,7 +20,7 @@ const TIME_LIMIT = 5 * 60 * 1000;
 
 const port = process.env.PORT || 5252;
 
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(cookieParser());
 app.use(bodyParser.json());
 

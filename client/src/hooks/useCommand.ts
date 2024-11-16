@@ -63,7 +63,7 @@ function useCommand() {
     if (session.reg) {
       if (!session.username) {
         const fetchedData = await handleFetchCommands(
-          "http://localhost:3232/api/reg",
+          `${process.env.SERVER_URL}/api/reg`,
           {
             username: inputValue,
           }
@@ -80,7 +80,7 @@ function useCommand() {
         return;
       } else {
         const fetchedData = await handleFetchCommands(
-          "http://localhost:3232/api/reg",
+          `${process.env.SERVER_URL}/api/reg`,
           {
             username: session.username,
             password: inputValue,
@@ -102,7 +102,7 @@ function useCommand() {
 
     if (!session.username) {
       const fetchedData = await handleFetchCommands(
-        "http://localhost:3232/api/login",
+        `${process.env.SERVER_URL}/api/login`,
         {
           username: inputValue,
         }
@@ -117,7 +117,7 @@ function useCommand() {
 
     if (session.password === false) {
       const fetchedData = await handleFetchCommands(
-        "http://localhost:3232/api/login",
+        `${process.env.SERVER_URL}/api/login`,
         {
           username: session.username,
           password: inputValue,
