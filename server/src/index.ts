@@ -100,7 +100,7 @@ app.post("/api/logout", (req: Request, res: Response) => {
 
 app.post("/api/session", function (req, res) {
   res.json({
-    message: "Session.id: " + req.session.id,
+    sessionID: req.session.id,
     user: (req.session as ISession).username,
   });
 });

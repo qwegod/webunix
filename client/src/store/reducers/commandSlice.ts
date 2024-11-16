@@ -13,8 +13,8 @@ const initialState: ICommandState = {
   value: { command: null, response: "" },
 };
 
-export const commandsSlice = createSlice({
-  name: "commands",
+export const commandSlice = createSlice({
+  name: "command",
   initialState,
   reducers: {
     setCommand: (state, action: PayloadAction<ICommand>) => {
@@ -29,6 +29,6 @@ export const commandsSlice = createSlice({
   },
 });
 
-export const { setCommand, setResponse, clearCommand } = commandsSlice.actions;
+export const { setCommand, setResponse, clearCommand } = commandSlice.actions;
 
-export default commandsSlice.reducer;
+export default commandSlice.reducer;

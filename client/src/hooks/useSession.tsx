@@ -3,6 +3,7 @@ import { handleFetchCommands } from "../handlers/handleFetchCommand";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 import {
+  clearOutput,
   setLogin,
   setMessage,
   setWelcome,
@@ -36,6 +37,9 @@ function useSession() {
         }, 1000);
       } else {
         Cookies.remove("connect.sid");
+        setTimeout(() => {
+          window.location.reload()
+        }, 1000);
         return;
       }
     } else {

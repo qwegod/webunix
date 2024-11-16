@@ -1,5 +1,5 @@
 import { clearCaretOffset } from "../store/reducers/caretOffsetSlice";
-import { setCommand } from "../store/reducers/commandsSlice";
+import { setCommand } from "../store/reducers/commandSlice";
 import {
   clearInputValue,
   setInputValue,
@@ -14,7 +14,7 @@ import {
 import {
   clearOutput,
   setMessage,
-  setWelcome,
+  setWelcome
 } from "../store/reducers/outputSlice";
 
 import { handleFetchCommands } from "../handlers/handleFetchCommand";

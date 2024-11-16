@@ -1,16 +1,13 @@
-import {
-  clearOutput,
-  printOut,
-  setWelcome,
-} from "../store/reducers/outputSlice";
+import { clearOutput } from "../store/reducers/outputSlice";
 import { logout } from "../store/reducers/sessionSlice";
-import { setResponse } from "../store/reducers/commandsSlice";
+import { setResponse } from "../store/reducers/commandSlice";
+
+import { message } from "../welcome";
 
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 
 import { handleFetchCommands } from "../handlers/handleFetchCommand";
 
-import Cookies from "js-cookie";
 
 import useOutput from "./useOutput";
 
@@ -24,34 +21,44 @@ function useExecute() {
 
   const execute = async (inputValue: string) => {
     switch (inputValue) {
-      case "!help":
-        const response = Object.entries(console_commands)
+      case "help":
+        const help_response = Object.entries(console_commands)
           .map(([key, value]) => `${key}: ${value}`)
           .join("\n");
-        dispatch(setResponse(response));
+        dispatch(setResponse(help_response));
 
         break;
-      case "!info":
-        dispatch(setWelcome());
+      case "info":
+        dispatch(setResponse(message));
 
         break;
-      case "!clear":
+      case "clear":
         dispatch(clearOutput());
+        dispatch(setResponse("Done"));
         break;
-      case "!user":
-        dispatch(printOut(JSON.stringify(session)));
+      case "user":
+        let user_response = Object.entries(session)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join("\n");
+        dispatch(setResponse(user_response));
         break;
-      case "!logout":
+      case "logout":
         await handleFetchCommands("http://localhost:3232/api/logout", {});
         dispatch(logout());
-        Cookies.remove("connect.sid");
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+
         break;
-      case "!session":
+      case "session":
         const fetchedData = await handleFetchCommands(
           "http://localhost:3232/api/session",
           {}
         );
-        dispatch(printOut(JSON.stringify(fetchedData)));
+        const session_response = Object.entries(fetchedData)
+          .map(([key, value]) => `${key}: ${value}`)
+          .join("\n");
+        dispatch(setResponse(session_response));
         break;
       default:
         dispatch(setResponse("Unknown command"));

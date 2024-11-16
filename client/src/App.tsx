@@ -23,8 +23,8 @@ function App() {
   const session = useAppSelector((state) => state.session);
   const suggest = useAppSelector((state) => state.output.suggest);
   const suggestEqual = useAppSelector((state) => state.output.suggestEqual);
-  const command = useAppSelector((state) => state.commands.value.command);
-  const response = useAppSelector((state) => state.commands.value.response);
+  const command = useAppSelector((state) => state.command.value.command);
+  const response = useAppSelector((state) => state.command.value.response);
   const console_commands = useAppSelector(
     (state) => state.output.console_commands
   );
@@ -34,6 +34,7 @@ function App() {
   const { authorizationChecker } = useSession();
 
   const inputRef = useRef<HTMLInputElement>(null);
+  const divRef = useRef<HTMLDivElement>(null);
 
   const dispatch = useAppDispatch();
 
@@ -100,8 +101,6 @@ function App() {
     };
   }, [dispatch, inputRef]);
 
-  const divRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (divRef.current) {
       divRef.current.scrollTop = divRef.current.scrollHeight;
@@ -112,7 +111,7 @@ function App() {
     <div className="flex flex-col w-[70%] h-screen m-auto">
       <div
         ref={divRef}
-        className="h-[90%] overflow-y-scroll border-2 border-yellow-300 p-4"
+        className="h-[90%] overflow-x-hidden overflow-y-scroll border-2 border-yellow-300 p-4"
       >
         {renderLastMessage()}
       </div>

@@ -16,7 +16,7 @@ function useOutput() {
   };
 
   const printCommandAndResponse = () => {
-    const latestCommand = store.getState().commands.value;
+    const latestCommand = store.getState().command.value;
 
     dispatch(printOut(latestCommand.command as string))
     dispatch(printOut(latestCommand.response as string))
