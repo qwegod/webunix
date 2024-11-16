@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+
 import inputValueReducer from "./reducers/inputValueSlice";
 import caretOffsetReducer from "./reducers/caretOffsetSlice";
 import commandsReducer from "./reducers/commandsSlice";

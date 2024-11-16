@@ -1,17 +1,19 @@
 import { handleFetchCommands } from "../handlers/handleFetchCommand";
+
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+
 import {
-  printOut,
   setLogin,
   setMessage,
   setWelcome,
 } from "../store/reducers/outputSlice";
-import Cookies from "js-cookie";
 import {
   setAuthorized,
   setUsername,
   setPassword,
 } from "../store/reducers/sessionSlice";
+
+import Cookies from "js-cookie";
 
 function useSession() {
   const dispatch = useAppDispatch();

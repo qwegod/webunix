@@ -1,41 +1,34 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface ICommandsState {
-  value: ICommand[];
+interface ICommandState {
+  value: ICommand;
 }
 
 export interface ICommand {
-  command: string;
-  response?: string | null;
+  command: string | null;
+  response?: string;
 }
 
-const initialState: ICommandsState = {
-  value: [],
+const initialState: ICommandState = {
+  value: { command: null, response: "" },
 };
 
 export const commandsSlice = createSlice({
   name: "commands",
   initialState,
   reducers: {
-    addCommand: (state, action: PayloadAction<ICommand>) => {
-      state.value = [
-        ...state.value,
-        { command: action.payload.command, response: null },
-      ];
+    setCommand: (state, action: PayloadAction<ICommand>) => {
+      state.value = action.payload;
     },
     setResponse: (state, action: PayloadAction<string>) => {
-      const lastCommand = state.value.at(-1);
-      if (lastCommand) {
-        lastCommand.response = action.payload;
-      }
+      state.value.response = action.payload;
     },
-
-    clearCommands: (state) => {
-      state.value = [];
+    clearCommand: (state) => {
+      state.value = { command: null, response: "" };
     },
   },
 });
 
-export const { addCommand, setResponse, clearCommands } = commandsSlice.actions;
+export const { setCommand, setResponse, clearCommand } = commandsSlice.actions;
 
 export default commandsSlice.reducer;

@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import Cookies from "js-cookie";
 
 export interface ISession {
@@ -34,6 +35,7 @@ export const sessionSlice = createSlice({
       state.reg = action.payload;
     },
     setAuthorized: (state) => {
+      state.directory = "root";
       state.authorized = true;
     },
     logout: (state) => {
