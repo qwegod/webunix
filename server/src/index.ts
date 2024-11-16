@@ -26,7 +26,12 @@ app.use(bodyParser.json());
 
 app.use(session(sessionConfig));
 
+setInterval(() => {
+  console.log(process.env.CLIENT_URL)
+}, 5000)
+
 // app.post("/api/execute", (req: Request, res: Response) => {
+
 
 //   try {
 //     const exec = req.body;
