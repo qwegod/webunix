@@ -1,5 +1,5 @@
 
-# React and Express Application: Simulated Unix Console
+Simulated Unix Console
 
 This application simulates a Unix console in the browser, using a **React** front-end, an **Express** back-end, and a **MySQL** database for user management. The application allows for basic interaction with a simulated shell environment and supports user authentication.
 
