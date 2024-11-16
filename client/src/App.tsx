@@ -1,20 +1,34 @@
 import { useEffect, useRef } from "react";
+
 import { useAppDispatch, useAppSelector } from "./store/hooks";
+
 import { handleChangeValue } from "./handlers/handleChangeValue";
-import useCommand from "./hooks/useCommand";
 import { handleCaretPosition } from "./handlers/handleCaretPosition";
+
+import useCommand from "./hooks/useCommand";
 import useOutput from "./hooks/useOutput";
 import useSession from "./hooks/useSession";
-import { clearSuggest, setSuggest, setSuggestEqual } from "./store/reducers/outputSlice";
+import useExecute from "./hooks/useExecute";
+
+import {
+  clearSuggest,
+  setSuggest,
+  setSuggestEqual,
+} from "./store/reducers/outputSlice";
 
 function App() {
   const inputValue = useAppSelector((state) => state.inputValue.value);
   const caretOffset = useAppSelector((state) => state.caretOffset.value);
   const { sendCommand } = useCommand();
   const session = useAppSelector((state) => state.session);
-  const suggest = useAppSelector(state => state.output.suggest)
-  const suggestEqual = useAppSelector(state => state.output.suggestEqual)
-  const console_commands = useAppSelector(state => state.output.console_commands)
+  const suggest = useAppSelector((state) => state.output.suggest);
+  const suggestEqual = useAppSelector((state) => state.output.suggestEqual);
+  const command = useAppSelector((state) => state.commands.value.command);
+  const response = useAppSelector((state) => state.commands.value.response);
+  const console_commands = useAppSelector(
+    (state) => state.output.console_commands
+  );
+  const { execute } = useExecute();
 
   const { renderLastMessage } = useOutput();
   const { authorizationChecker } = useSession();
@@ -22,6 +36,11 @@ function App() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (command) execute(command);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [command]);
 
   useEffect(() => {
     async function fetchAuthorization() {
@@ -47,14 +66,19 @@ function App() {
     inputValue
       .split("")
       .forEach((sym, index) =>
-        suggest?.split("")[index] === sym ? dispatch(setSuggestEqual(true)) : dispatch(setSuggestEqual(false))
+        suggest?.split("")[index] === sym
+          ? dispatch(setSuggestEqual(true))
+          : dispatch(setSuggestEqual(false))
       );
-      inputValue === "" 
-      ? dispatch(clearSuggest()) 
-      : dispatch(setSuggest(Object.keys(console_commands).find((e) => e.startsWith(inputValue)) as string));
-    
-
-    console.log(suggest)
+    inputValue === ""
+      ? dispatch(clearSuggest())
+      : dispatch(
+          setSuggest(
+            Object.keys(console_commands).find((e) =>
+              e.startsWith(inputValue)
+            ) as string
+          )
+        );
   }, [console_commands, dispatch, inputValue, suggest]);
 
   useEffect(() => {
@@ -76,19 +100,30 @@ function App() {
     };
   }, [dispatch, inputRef]);
 
+  const divRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (divRef.current) {
+      divRef.current.scrollTop = divRef.current.scrollHeight;
+    }
+  }, [response]);
+
   return (
     <div className="flex flex-col w-[70%] h-screen m-auto">
-      <div className="h-[90%] border-2 border-yellow-300 p-4">
+      <div
+        ref={divRef}
+        className="h-[90%] overflow-y-scroll border-2 border-yellow-300 p-4"
+      >
         {renderLastMessage()}
       </div>
+
       <div className="h-[10%] border-2 border-red-600 flex items-center justify-center">
         <div className="relative w-[90%] bg-black h-6">
           <span className={"absolute -translate-x-4"}>$</span>
           <span
             className={`
               " absolute text-gray-400  z-0 font-bold",
-              ${!suggestEqual && "hidden"}`
-            }
+              ${!suggestEqual && "hidden"}`}
           >
             {suggest}
           </span>

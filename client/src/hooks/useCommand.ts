@@ -1,7 +1,9 @@
 import { clearCaretOffset } from "../store/reducers/caretOffsetSlice";
-import { addCommand } from "../store/reducers/commandsSlice";
-import { clearInputValue } from "../store/reducers/inputValueSlice";
-import { handleFetchCommands } from "../handlers/handleFetchCommand";
+import { setCommand } from "../store/reducers/commandsSlice";
+import {
+  clearInputValue,
+  setInputValue,
+} from "../store/reducers/inputValueSlice";
 import {
   setAuthorized,
   setDirectory,
@@ -11,39 +13,39 @@ import {
 } from "../store/reducers/sessionSlice";
 import {
   clearOutput,
-  printOut,
   setMessage,
   setWelcome,
 } from "../store/reducers/outputSlice";
-import useExecute from "./useExecute";
+
+import { handleFetchCommands } from "../handlers/handleFetchCommand";
+
 import { useAppDispatch, useAppSelector } from "../store/hooks";
+
 import useSession from "./useSession";
 
 function useCommand() {
   const dispatch = useAppDispatch();
   const { authorizationChecker, notUniqueUsernameMessage } = useSession();
-  const { serverExecute } = useExecute();
   const session = useAppSelector((state) => state.session);
   const suggest = useAppSelector((state) => state.output.suggest);
 
   const sendCommand = async (e: KeyboardEvent, inputValue: string) => {
     if (e.key === "Enter" && inputValue.trim() !== "") {
       if (session.authorized === true) {
-        if (inputValue[0] === "!") {
-          if (suggest) {
-            serverExecute(suggest!);
-          }
-          serverExecute(inputValue);
-        } else {
-          dispatch(
-            addCommand({
-              command: inputValue,
-
-              response: null,
-            })
-          );
-          dispatch(printOut(inputValue));
+        if (suggest && inputValue !== suggest) {
+          dispatch(setInputValue(suggest));
+          return;
         }
+
+        dispatch(
+          setCommand({
+            command: inputValue,
+          })
+        );
+        dispatch(clearCaretOffset());
+        dispatch(clearInputValue());
+
+        return;
       } else {
         authorization(inputValue);
       }

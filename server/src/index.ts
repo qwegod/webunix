@@ -5,9 +5,11 @@ import dotenv from "dotenv";
 import bodyParser from "body-parser";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import fs from "fs"
 import { ISession } from "./ISession";
 import bcrypt from "bcrypt";
 import { sessionConfig } from "./sessionConfig";
+import path from "path";
 
 dotenv.config();
 
@@ -158,6 +160,13 @@ app.post("/api/reg", (req: Request, res: Response) => {
           }
           if (result.affectedRows > 0) {
             (req.session as ISession).username = username;
+            const folderPath = path.join(__dirname, '../workspace', dir)
+            fs.mkdir(folderPath, (err) => {
+              if (err) {
+                console.error('Error creating folder')
+                return res.status(500)
+              }
+            })
             return res.json({ success: true });
           }
         }

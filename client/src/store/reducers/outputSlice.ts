@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+
 import { message } from "../../welcome";
 
 interface IOutput {
   out: string[];
   console_commands: Record<string, string>;
   suggest: string | undefined;
-  suggestEqual: boolean
+  suggestEqual: boolean;
 }
 
 const initialState: IOutput = {
@@ -19,7 +20,7 @@ const initialState: IOutput = {
     "!logout": "-destroy session",
   },
   suggest: "",
-  suggestEqual: false
+  suggestEqual: false,
 };
 
 export const outputSlice = createSlice({
@@ -42,18 +43,26 @@ export const outputSlice = createSlice({
       state.out = [];
     },
     setSuggest: (state, action: PayloadAction<string>) => {
-      state.suggest = action.payload
+      state.suggest = action.payload;
     },
     clearSuggest: (state) => {
-      state.suggest = ''
+      state.suggest = "";
     },
     setSuggestEqual: (state, action: PayloadAction<boolean>) => {
-      state.suggestEqual = action.payload
-    }
+      state.suggestEqual = action.payload;
+    },
   },
 });
 
-export const { setMessage, setLogin, setWelcome, printOut, clearOutput, setSuggest, clearSuggest, setSuggestEqual } =
-  outputSlice.actions;
+export const {
+  setMessage,
+  setLogin,
+  setWelcome,
+  printOut,
+  clearOutput,
+  setSuggest,
+  clearSuggest,
+  setSuggestEqual,
+} = outputSlice.actions;
 
 export default outputSlice.reducer;
