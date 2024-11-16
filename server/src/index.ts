@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express, Request, response, Response } from "express";
 import { db } from "./db";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -197,6 +197,10 @@ app.post("/api/reg", (req: Request, res: Response) => {
   }
 });
 
+app.get("/", (_, res: Response) => {
+  res.status(200).json({message: "Welcome"})
+})
+
 setInterval(() => {
   const currentTime = new Date();
   const expirationTime = new Date(currentTime.getTime() - TIME_LIMIT);
@@ -240,3 +244,5 @@ app.post("/api/authorizationChecker", (req: Request, res: Response) => {
 app.listen(port, () => {
   console.log(`[server]: server is running at http://localhost:${port}`);
 });
+
+export default app;
